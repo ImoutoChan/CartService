@@ -1,0 +1,86 @@
+using AutoMapper;
+using CartService.DataAccess;
+using CartService.DataAccess.Options;
+using CartService.Infrastructure;
+using CartService.Services.Queries;
+using MediatR;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+
+namespace CartService
+{
+    public class Startup
+    {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddControllers();
+
+            // todo cleanup
+            services.AddMediatR(typeof(CartViewQuery));
+            services.AddTransient(typeof (IPipelineBehavior<,>), typeof (LoggingBehavior<,>));
+
+            services.AddAutoMapper(typeof(WebApiProfile));
+
+            services.AddTransient<ICartItemRepository, CartItemRepository>();
+            services.AddTransient<ICartRepository, CartRepository>();
+            services.AddTransient<ICartServiceConnectionFactory, CartServiceConnectionFactory>();
+
+            services.AddOptions();
+            services.Configure<ConnectionStrings>(Configuration.GetSection(nameof(ConnectionStrings)));
+
+            services.AddLogging(builder => builder.AddConsole());
+
+
+            services.AddSwaggerGen(
+                options =>
+                {
+                    options.SwaggerDoc(
+                        "v1.0",
+                        new OpenApiInfo()
+                        {
+                            Title = "CartService",
+                            Version = "v1.0"
+                        });
+                });
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1.0/swagger.json", "CartService API V1.0");
+            });
+        }
+    }
+}
