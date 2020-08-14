@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CartService.Infrastructure.Quartz;
-using CartService.Services.Commands;
+using CartService.Services.Commands.Cart;
 using MediatR;
 using Microsoft.Extensions.Options;
 using Quartz;

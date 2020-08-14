@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using MediatR;
 
-namespace CartService.Services.Commands
+namespace CartService.Services.Commands.Cart
 {
     public class DeleteCartItemsCommand : IRequest<Unit>
     {

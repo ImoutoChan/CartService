@@ -2,7 +2,7 @@
 using CartService.Core;
 using MediatR;
 
-namespace CartService.Services.Commands
+namespace CartService.Services.Commands.Cart
 {
     public class AddCartItemsCommand : IRequest<int>
     {

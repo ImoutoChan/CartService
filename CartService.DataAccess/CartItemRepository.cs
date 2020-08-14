@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CartService.Core;
@@ -54,22 +53,6 @@ namespace CartService.DataAccess
 
             try
             {
-                if (possibleCartId.HasValue)
-                {
-                    var exists = await connection.ExecuteScalarAsync<bool>(
-                        "SELECT count(1) FROM Cart WHERE Id = @cartId",
-                        new {cartId = possibleCartId.Value},
-                        transaction);
-
-                    if (!exists)
-                    {
-                        _logger.LogError("The cart with id {CartId} was not found.", possibleCartId);
-
-                        // todo typed exception
-                        throw new Exception($"The cart with id {possibleCartId} was not found.");
-                    }
-                }
-
                 // create a new cart
                 var cartId = possibleCartId ?? await connection.QuerySingleAsync<int>(
                     "INSERT INTO Cart(Created, Updated) " +

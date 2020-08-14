@@ -1,4 +1,3 @@
-using System;
 using AutoMapper;
 using CartService.DataAccess;
 using CartService.DataAccess.Options;
@@ -6,6 +5,7 @@ using CartService.Infrastructure;
 using CartService.Infrastructure.Quartz;
 using CartService.Quartz;
 using CartService.Services.Queries;
+using CartService.Services.Services;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -14,9 +14,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Quartz;
-using Quartz.Impl;
-using Quartz.Spi;
 
 namespace CartService
 {
@@ -42,7 +39,9 @@ namespace CartService
 
             services.AddTransient<ICartItemRepository, CartItemRepository>();
             services.AddTransient<ICartRepository, CartRepository>();
+            services.AddTransient<IWebHookRepository, WebHookRepository>();
             services.AddTransient<ICartServiceConnectionFactory, CartServiceConnectionFactory>();
+            services.AddTransient<ICartService, Services.Services.CartService>();
 
             services.AddOptions();
             services.Configure<ConnectionStrings>(Configuration.GetSection(nameof(ConnectionStrings)));

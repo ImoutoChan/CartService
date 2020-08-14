@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using CartService.DataAccess;
 using MediatR;
 
-namespace CartService.Services.Commands
+namespace CartService.Services.Commands.Cart
 {
     public class DeleteCartItemsCommandHandler : IRequestHandler<DeleteCartItemsCommand>
     {

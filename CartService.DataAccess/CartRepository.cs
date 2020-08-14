@@ -30,9 +30,15 @@ namespace CartService.DataAccess
             return carts.ToArray();
         }
 
-        public Task<Cart?> GetCart(int id)
+        public async Task<Cart?> GetCart(int id)
         {
-            throw new NotImplementedException();
+            using var connection = _cartServiceConnectionFactory.CreateConnection();
+
+            return await connection.QuerySingleOrDefaultAsync<Cart>(
+                "SELECT Id, Created, Updated " +
+                "FROM Cart " +
+                "WHERE Id = @id",
+                new {id});
         }
 
         public async Task DeleteCarts(IReadOnlyCollection<int> cartIds)

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CartService.Core
+﻿namespace CartService.Core
 {
     public class WebHook
     {

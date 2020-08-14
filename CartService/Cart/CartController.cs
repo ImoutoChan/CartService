@@ -2,7 +2,7 @@
 using AutoMapper;
 using CartService.Cart.Requests;
 using CartService.Cart.Responses;
-using CartService.Services.Commands;
+using CartService.Services.Commands.Cart;
 using CartService.Services.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
