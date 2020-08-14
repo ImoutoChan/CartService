@@ -12,7 +12,6 @@ namespace CartService.Core
 
         public Cart(
             int id,
-            int userId,
             DateTimeOffset created,
             DateTimeOffset updated)
         {

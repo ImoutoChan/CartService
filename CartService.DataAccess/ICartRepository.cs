@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CartService.Core;
 
 namespace CartService.DataAccess
 {
     public interface ICartRepository
     {
-        IReadOnlyCollection<Cart> GetOutdatedCarts(DateTimeOffset olderThan);
+        Task<IReadOnlyCollection<Cart>> GetOutdatedCarts(DateTimeOffset olderThan);
 
-        Cart? GetCart(int id);
+        Task<Cart?> GetCart(int id);
 
-        void DeleteCarts(IReadOnlyCollection<int> cartIds);
+        Task DeleteCarts(IReadOnlyCollection<int> cartIds);
     }
 }

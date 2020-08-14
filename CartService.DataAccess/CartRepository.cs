@@ -1,24 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using CartService.Core;
+using CartService.DataAccess.Options;
+using Dapper;
 
 namespace CartService.DataAccess
 {
     public class CartRepository : ICartRepository
     {
-        public IReadOnlyCollection<Cart> GetOutdatedCarts(DateTimeOffset olderThan)
+        private readonly ICartServiceConnectionFactory _cartServiceConnectionFactory;
+
+        public CartRepository(ICartServiceConnectionFactory cartServiceConnectionFactory)
+        {
+            _cartServiceConnectionFactory = cartServiceConnectionFactory;
+        }
+
+        public async Task<IReadOnlyCollection<Cart>> GetOutdatedCarts(DateTimeOffset olderThan)
+        {
+            using var connection = _cartServiceConnectionFactory.CreateConnection();
+
+            var carts = await connection.QueryAsync<Cart>(
+                "SELECT Id, Created, Updated " +
+                "FROM Cart " +
+                "WHERE Created < @olderThan", 
+                new {olderThan = olderThan.DateTime});
+
+            return carts.ToArray();
+        }
+
+        public Task<Cart?> GetCart(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Cart? GetCart(int id)
+        public async Task DeleteCarts(IReadOnlyCollection<int> cartIds)
         {
-            throw new NotImplementedException();
-        }
+            using var connection = _cartServiceConnectionFactory.CreateConnection();
 
-        public void DeleteCarts(IReadOnlyCollection<int> cartIds)
-        {
-            throw new NotImplementedException();
+            await connection.QueryAsync(
+                "DELETE FROM Cart " +
+                "WHERE Id in @cartIds",
+                new {cartIds});
         }
     }
 }
