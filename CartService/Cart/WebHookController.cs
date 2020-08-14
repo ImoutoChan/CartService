@@ -21,7 +21,7 @@ namespace CartService.Cart
         }
 
         [HttpPost]
-        public async Task Set(WebHookRequest request)
+        public async Task Add(WebHookRequest request)
         {
             var command = _mapper.Map<AddWebHookCommand>(request);
             await _mediator.Send(command);

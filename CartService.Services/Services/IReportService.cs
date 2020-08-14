@@ -1,4 +1,4 @@
-﻿namespace CartService.Services.Commands.Cart
+﻿namespace CartService.Services.Services
 {
     public interface IReportService
     {

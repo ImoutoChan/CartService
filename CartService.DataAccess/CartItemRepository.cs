@@ -4,21 +4,17 @@ using System.Threading.Tasks;
 using CartService.Core;
 using CartService.DataAccess.Options;
 using Dapper;
-using Microsoft.Extensions.Logging;
 
 namespace CartService.DataAccess
 {
     public class CartItemRepository : ICartItemRepository
     {
         private readonly ICartServiceConnectionFactory _cartServiceConnectionFactory;
-        private readonly ILogger _logger;
 
         public CartItemRepository(
-            ICartServiceConnectionFactory cartServiceConnectionFactory, 
-            ILogger<CartItemRepository> logger)
+            ICartServiceConnectionFactory cartServiceConnectionFactory)
         {
             _cartServiceConnectionFactory = cartServiceConnectionFactory;
-            _logger = logger;
         }
 
         public async Task<IReadOnlyCollection<CartItemEntry>> Get(int cartId)

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CartService.DataAccess;
 using Microsoft.Extensions.Logging;
 
@@ -22,9 +21,7 @@ namespace CartService.Services.Services
             if (cart == null)
             {
                 _logger.LogError("The cart with id {CartId} was not found.", id);
-
-                // todo typed exception
-                throw new Exception($"The cart with id {id} was not found.");
+                throw new CartException($"The cart with id {id} was not found.");
             }
         }
     }

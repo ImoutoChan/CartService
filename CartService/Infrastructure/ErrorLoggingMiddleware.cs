@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace CartService.Infrastructure
 {
-    // todo clean up
     public class ErrorLoggingMiddleware
     {
         private readonly RequestDelegate _next;
@@ -14,7 +14,7 @@ namespace CartService.Infrastructure
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, ILogger<ErrorLoggingMiddleware> logger)
         {
             try
             {
@@ -22,7 +22,7 @@ namespace CartService.Infrastructure
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine($"The following error happened: {e.Message}");
+                logger.LogError(e, "An exception occured while running ASPNET CORE pipeline.");
                 throw;
             }
         }

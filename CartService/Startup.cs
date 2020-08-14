@@ -6,7 +6,6 @@ using CartService.DataAccess.Options;
 using CartService.Infrastructure;
 using CartService.Infrastructure.Quartz;
 using CartService.Quartz;
-using CartService.Services.Commands.Cart;
 using CartService.Services.Queries;
 using CartService.Services.Services;
 using CartService.Services.Services.Product;
@@ -36,34 +35,26 @@ namespace CartService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-
-            // todo cleanup
             services.AddMediatR(typeof(CartViewQuery));
             services.AddTransient(typeof (IPipelineBehavior<,>), typeof (LoggingBehavior<,>));
-
             services.AddAutoMapper(typeof(WebApiProfile));
+            services.AddLogging(builder => builder.AddConsole());
 
-            services.AddTransient<ICartItemRepository, CartItemRepository>();
-            services.AddTransient<ICartRepository, CartRepository>();
-            services.AddTransient<IWebHookRepository, WebHookRepository>();
-            services.AddTransient<ICartServiceConnectionFactory, CartServiceConnectionFactory>();
-            services.AddTransient<ICartService, Services.Services.CartService>();
-            services.AddTransient<IProductService, ProductService>();
-            services.AddTransient<IReportService, ReportService>();
-
-            services
-                .AddHttpClient<IWebHookCaller, WebHookCaller>()
-                .AddPolicyHandler(GetRetryPolicy());
+            AddDataAccess(services);
+            AddServices(services);
 
             services.AddOptions();
             services.Configure<ConnectionStrings>(Configuration.GetSection(nameof(ConnectionStrings)));
             services.Configure<QuartzSettings>(Configuration.GetSection(nameof(QuartzSettings)));
 
-            services.AddLogging(builder => builder.AddConsole());
-
             services.AddQuartzJob<CleanupCartsJob, CleanupCartsJob.Description>();
             services.AddQuartzJob<GenerateReportsJob, GenerateReportsJob.Description>();
 
+            AddSwagger(services);
+        }
+
+        private static void AddSwagger(IServiceCollection services)
+        {
             services.AddSwaggerGen(
                 options =>
                 {
@@ -89,7 +80,7 @@ namespace CartService
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseMiddleware<ErrorLoggingMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
@@ -108,5 +99,24 @@ namespace CartService
                 .HandleTransientHttpError()
                 .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
                 .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+
+        private static void AddServices(IServiceCollection services)
+        {
+            services.AddTransient<ICartService, Services.Services.CartService>();
+            services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<IReportService, ReportService>();
+
+            services
+                .AddHttpClient<IWebHookCaller, WebHookCaller>()
+                .AddPolicyHandler(GetRetryPolicy());
+        }
+
+        private static void AddDataAccess(IServiceCollection services)
+        {
+            services.AddTransient<ICartItemRepository, CartItemRepository>();
+            services.AddTransient<ICartRepository, CartRepository>();
+            services.AddTransient<IWebHookRepository, WebHookRepository>();
+            services.AddTransient<ICartServiceConnectionFactory, CartServiceConnectionFactory>();
+        }
     }
 }

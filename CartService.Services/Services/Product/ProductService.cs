@@ -26,7 +26,7 @@ namespace CartService.Services.Services.Product
             yield return new Product(5, "Гитара", 30_000, false);
             yield return new Product(6, "Микроволновка", 15_000, false);
             yield return new Product(7, "Микрофон", 7_000, false);
-            yield return new Product(8, "Наукшники", 16_000, true);
+            yield return new Product(8, "Наушники", 16_000, true);
         }
     }
 }
