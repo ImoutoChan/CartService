@@ -1,9 +1,12 @@
+using System;
+using System.Net.Http;
 using AutoMapper;
 using CartService.DataAccess;
 using CartService.DataAccess.Options;
 using CartService.Infrastructure;
 using CartService.Infrastructure.Quartz;
 using CartService.Quartz;
+using CartService.Services.Commands.Cart;
 using CartService.Services.Queries;
 using CartService.Services.Services;
 using MediatR;
@@ -14,6 +17,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Polly;
+using Polly.Extensions.Http;
 
 namespace CartService
 {
@@ -42,6 +47,10 @@ namespace CartService
             services.AddTransient<IWebHookRepository, WebHookRepository>();
             services.AddTransient<ICartServiceConnectionFactory, CartServiceConnectionFactory>();
             services.AddTransient<ICartService, Services.Services.CartService>();
+
+            services
+                .AddHttpClient<IWebHookCaller, WebHookCaller>()
+                .AddPolicyHandler(GetRetryPolicy());
 
             services.AddOptions();
             services.Configure<ConnectionStrings>(Configuration.GetSection(nameof(ConnectionStrings)));
@@ -90,5 +99,11 @@ namespace CartService
                 c.SwaggerEndpoint("/swagger/v1.0/swagger.json", "CartService API V1.0");
             });
         }
+
+        private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+            => HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
     }
 }

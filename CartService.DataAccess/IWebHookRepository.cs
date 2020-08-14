@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CartService.DataAccess
 {
@@ -7,5 +8,7 @@ namespace CartService.DataAccess
         Task Add(int cartId, string webHook);
 
         Task Delete(int cartId, string webHook);
+
+        Task<IReadOnlyCollection<string>> GetForCarts(IReadOnlyCollection<int> cartIds);
     }
 }
