@@ -8,6 +8,8 @@ namespace CartService.DataAccess
     {
         Task<IReadOnlyCollection<CartItemEntry>> Get(int cartId);
 
+        Task<IReadOnlyCollection<CartItem>> GetItems(IReadOnlyCollection<int> cartIds);
+
         Task Delete(int cartId, IReadOnlyCollection<int> productIds);
 
         Task<int> Add(int? cartId, IReadOnlyCollection<CartItemEntry> items);

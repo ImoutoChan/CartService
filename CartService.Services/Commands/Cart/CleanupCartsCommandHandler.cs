@@ -26,13 +26,13 @@ namespace CartService.Services.Commands.Cart
 
         public async Task<Unit> Handle(CleanupCartsCommand request, CancellationToken cancellationToken)
         {
-            var outdatedCarts = await _cartRepository.GetOutdatedCarts(DateTimeOffset.Now.AddDays(-30));
+            var outdatedCarts = await _cartRepository.GetOutdated(DateTimeOffset.Now.AddDays(-29));
             var cartIds = outdatedCarts.Select(x => x.Id).ToArray();
 
             var webHooks = await _webHookRepository.GetForCarts(cartIds);
             await _webHookCaller.Call(webHooks);
 
-            await _cartRepository.DeleteCarts(cartIds);
+            await _cartRepository.Delete(cartIds);
             return Unit.Value;
         }
     }

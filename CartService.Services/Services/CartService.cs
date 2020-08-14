@@ -18,7 +18,7 @@ namespace CartService.Services.Services
 
         public async Task ValidateCartId(int id)
         {
-            var cart = await _cartRepository.GetCart(id);
+            var cart = await _cartRepository.Get(id);
             if (cart == null)
             {
                 _logger.LogError("The cart with id {CartId} was not found.", id);

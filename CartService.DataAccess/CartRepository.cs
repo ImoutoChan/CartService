@@ -17,7 +17,7 @@ namespace CartService.DataAccess
             _cartServiceConnectionFactory = cartServiceConnectionFactory;
         }
 
-        public async Task<IReadOnlyCollection<Cart>> GetOutdatedCarts(DateTimeOffset olderThan)
+        public async Task<IReadOnlyCollection<Cart>> GetOutdated(DateTimeOffset olderThan)
         {
             using var connection = _cartServiceConnectionFactory.CreateConnection();
 
@@ -30,7 +30,7 @@ namespace CartService.DataAccess
             return carts.ToArray();
         }
 
-        public async Task<Cart?> GetCart(int id)
+        public async Task<Cart?> Get(int id)
         {
             using var connection = _cartServiceConnectionFactory.CreateConnection();
 
@@ -41,7 +41,7 @@ namespace CartService.DataAccess
                 new {id});
         }
 
-        public async Task DeleteCarts(IReadOnlyCollection<int> cartIds)
+        public async Task Delete(IReadOnlyCollection<int> cartIds)
         {
             using var connection = _cartServiceConnectionFactory.CreateConnection();
 
@@ -49,6 +49,16 @@ namespace CartService.DataAccess
                 "DELETE FROM Cart " +
                 "WHERE Id in @cartIds",
                 new {cartIds});
+        }
+
+        public async Task<IReadOnlyCollection<Cart>> GetAll()
+        {
+            using var connection = _cartServiceConnectionFactory.CreateConnection();
+
+            return (await connection.QueryAsync<Cart>(
+                "SELECT Id, Created, Updated " +
+                "FROM Cart "))
+                .ToArray();
         }
     }
 }

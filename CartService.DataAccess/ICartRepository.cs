@@ -7,10 +7,12 @@ namespace CartService.DataAccess
 {
     public interface ICartRepository
     {
-        Task<IReadOnlyCollection<Cart>> GetOutdatedCarts(DateTimeOffset olderThan);
+        Task<IReadOnlyCollection<Cart>> GetOutdated(DateTimeOffset olderThan);
 
-        Task<Cart?> GetCart(int id);
+        Task<Cart?> Get(int id);
 
-        Task DeleteCarts(IReadOnlyCollection<int> cartIds);
+        Task Delete(IReadOnlyCollection<int> cartIds);
+
+        Task<IReadOnlyCollection<Cart>> GetAll();
     }
 }

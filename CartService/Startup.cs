@@ -9,6 +9,7 @@ using CartService.Quartz;
 using CartService.Services.Commands.Cart;
 using CartService.Services.Queries;
 using CartService.Services.Services;
+using CartService.Services.Services.Product;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -47,6 +48,8 @@ namespace CartService
             services.AddTransient<IWebHookRepository, WebHookRepository>();
             services.AddTransient<ICartServiceConnectionFactory, CartServiceConnectionFactory>();
             services.AddTransient<ICartService, Services.Services.CartService>();
+            services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<IReportService, ReportService>();
 
             services
                 .AddHttpClient<IWebHookCaller, WebHookCaller>()
@@ -54,19 +57,19 @@ namespace CartService
 
             services.AddOptions();
             services.Configure<ConnectionStrings>(Configuration.GetSection(nameof(ConnectionStrings)));
-            services.Configure<CleanupCartsSettings>(Configuration.GetSection(nameof(CleanupCartsSettings)));
+            services.Configure<QuartzSettings>(Configuration.GetSection(nameof(QuartzSettings)));
 
             services.AddLogging(builder => builder.AddConsole());
 
             services.AddQuartzJob<CleanupCartsJob, CleanupCartsJob.Description>();
-
+            services.AddQuartzJob<GenerateReportsJob, GenerateReportsJob.Description>();
 
             services.AddSwaggerGen(
                 options =>
                 {
                     options.SwaggerDoc(
                         "v1.0",
-                        new OpenApiInfo()
+                        new OpenApiInfo
                         {
                             Title = "CartService",
                             Version = "v1.0"

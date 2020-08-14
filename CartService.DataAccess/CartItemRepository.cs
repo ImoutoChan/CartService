@@ -34,6 +34,19 @@ namespace CartService.DataAccess
             return result.ToList();
         }
 
+        public async Task<IReadOnlyCollection<CartItem>> GetItems(IReadOnlyCollection<int> cartIds)
+        {
+            using var connection = _cartServiceConnectionFactory.CreateConnection();
+
+            var result = await connection.QueryAsync<CartItem>(
+                "SELECT CartId, ProductId, Quantity " +
+                "FROM CartItem " +
+                "WHERE CartId in @cartIds",
+                new {cartIds});
+
+            return result.ToList();
+        }
+
         public async Task Delete(int cartId, IReadOnlyCollection<int> productIds)
         {
             using var connection = _cartServiceConnectionFactory.CreateConnection();

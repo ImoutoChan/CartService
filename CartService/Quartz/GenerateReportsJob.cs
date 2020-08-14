@@ -7,34 +7,34 @@ using Quartz;
 
 namespace CartService.Quartz
 {
-    public class CleanupCartsJob : IJob
+    public class GenerateReportsJob : IJob
     {
         private readonly IMediator _mediator;
 
-        public CleanupCartsJob(IMediator mediator)
+        public GenerateReportsJob(IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        public Task Execute(IJobExecutionContext context) => _mediator.Send(new CleanupCartsCommand());
+        public Task Execute(IJobExecutionContext context) => _mediator.Send(new GenerateReportCommand());
 
         public class Description : IQuartzJobDescription
         {
-            private readonly int _repeatEveryMinutes;
+            private readonly string _cron;
 
             public Description(IOptions<QuartzSettings> options)
             {
-                _repeatEveryMinutes = options.Value.CleanupCartsEveryMinutes;
+                _cron = options.Value.GenerateReportDailyCron;
             }
             public IJobDetail GetJobDetails()
-                => JobBuilder.Create<CleanupCartsJob>()
-                    .WithIdentity("Clean up old carts")
+                => JobBuilder.Create<GenerateReportsJob>()
+                    .WithIdentity("Generate cart report")
                     .Build();
 
             public ITrigger GetJobTrigger()
                 => TriggerBuilder.Create()
-                    .WithIdentity("Clean up old carts trigger")
-                    .WithSchedule(SimpleScheduleBuilder.RepeatMinutelyForever(_repeatEveryMinutes))
+                    .WithIdentity("Generate cart report")
+                    .WithSchedule(CronScheduleBuilder.CronSchedule(_cron))
                     .Build();
         }
     }
